@@ -1,0 +1,22 @@
+﻿@page "/parentcomponent"
+
+<h3 class="text-danger">Parent Child Component</h3>
+
+<BlazorShop.Pages.Components.ChildComponent 
+                                            OnClickMethod="@ShowMessage" 
+                                            Title="Parameter passed from Parent to Child Component">
+    Text from Parent component to child component, which is stored in between the childcomponent tags in parent component. With supporting text below as a natural lead-in to additional content.
+</BlazorShop.Pages.Components.ChildComponent>
+
+<p><b>@messageText</b></p>
+
+@code {
+
+    private string messageText;
+
+    public void ShowMessage()
+    {
+        messageText = "Blazing fast using Balzor UI";
+    }
+
+}
