@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorShop.Services
 {
@@ -18,12 +19,20 @@ namespace BlazorShop.Services
         public Product GetProduct(int productId)
         {
             //Product obj = new Product();
-            return _db.Products.FirstOrDefault(p => p.ProductId == productId);
+            return _db.Products.Include(c => c.Category).FirstOrDefault(p => p.ProductId == productId);
         }
 
         public List<Product> GetProducts()
         {
-            return _db.Products.ToList();
+            // Eager loading
+            return _db.Products.Include(c=>c.Category).ToList();
+        }
+
+
+        public List<Category> GetCategoryList()
+        {
+            // Eager loading
+            return _db.Categories.ToList();
         }
 
         public bool CreateProduct(Product objProduct)
@@ -49,10 +58,14 @@ namespace BlazorShop.Services
 
             if(ExistingProduct != null)
             {
-                ExistingProduct.ProductName = objProduct.ProductName;
+                // check if new image is provided during the update then use the old image instead
+                if(objProduct == null)
+                {
+                    objProduct.Image = ExistingProduct.Image;
+                }
                 try
                 {
-
+                    _db.Products.Update(objProduct);
                     _db.SaveChanges();
                     return true;
                 }
@@ -71,6 +84,7 @@ namespace BlazorShop.Services
 
         public bool DeleteProduct(Product objProduct)
         {
+            // get the product
             var ExistingProduct = _db.Products.FirstOrDefault(p => p.ProductId == objProduct.ProductId);
 
             if (ExistingProduct != null)
