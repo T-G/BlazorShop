@@ -5,57 +5,63 @@
 @using System.IO
 
 @inherits OwningComponentBase<ProductService>
+<AuthorizeView>
+    <Authorized Context="Auth">
+        @if (products == null)
+        {
+            <p>Loading..</p>
+        }
+        else
+        {
+            <div class="container border p-3">
+                <div class="row">
+                    <div class="col-5">
+                        <h3 class="text-info">Product List</h3>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-info form-control" @onclick="AddNewProduct">
+                            Add New Product
+                        </button>
+                    </div>
+                </div>
 
-@if (products == null)
-{
-    <p>Loading..</p>
-}
-else
-{
-    <div class="container border p-3">
-        <div class="row">
-            <div class="col-5">
-                <h3 class="text-info">Product List</h3>
+                <div class="row pt-4">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Shade Color</th>
+                                <th scope="col">Category</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var obj in products)
+                            {
+                                <tr>
+                                    <td scope="row">@obj.ProductName</td>
+                                    <td scope="row">@obj.Price</td>
+                                    <td scope="row">@obj.ShadeColor</td>
+                                    <td scope="row">@obj.Category.CategoryName</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" @onclick="(()=>EditProduct(obj))">Edit</button>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
-            <div class="col-3">
-                <button class="btn btn-info form-control" @onclick="AddNewProduct">
-                    Add New Product
-                </button>
-            </div>
-        </div>
 
-        <div class="row pt-4">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Product Name</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Shade Color</th>
-                        <th scope="col">Category</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var obj in products)
-                    {
-                    <tr>
-                        <td scope="row">@obj.ProductName</td>
-                        <td scope="row">@obj.Price</td>
-                        <td scope="row">@obj.ShadeColor</td>
-                        <td scope="row">@obj.Category.CategoryName</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" @onclick="(()=>EditProduct(obj))">Edit</button>
-                        </td>
-                    </tr>
-                    }
-
-                </tbody>
-            </table>
-        </div>
-
-    </div>
-
-}
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorised to view the page. Please Log In.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @* Modal Window *@
 @if (ShowPopup)
@@ -80,7 +86,7 @@ else
                                     </div>
                                     <div class="col-8">
                                         <select @onchange="CategorySelectionChanged" class="form-control">
-                                            @foreach(var category in categories)
+                                            @foreach (var category in categories)
                                             {
                                                 <option value="@category.CategoryId" selected="@(category.CategoryId == objProduct.CategoryId ? true : false)">@category.CategoryName</option>
                                             }
@@ -93,7 +99,7 @@ else
                                     </div>
                                     <div class="col-8">
                                         <input class="form-control" type="text" @bind="objProduct.ProductName" />
-                                        <ValidationMessage For="@(() => objProduct.ProductName)"/>
+                                        <ValidationMessage For="@(() => objProduct.ProductName)" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
@@ -144,8 +150,6 @@ else
         </div>
     </div>
 }
-
-
 
 @* End of Modal Window *@
 
@@ -198,7 +202,7 @@ else
         var result = false;
         ShowPopup = false;
 
-        if(ImageUploaded != null)
+        if (ImageUploaded != null)
         {
             objProduct.Image = ImageUploaded;
             ImageUploaded = null;
@@ -221,7 +225,7 @@ else
     async Task HandleSelection(IFileListEntry[] files)
     {
         var file = files.FirstOrDefault();
-        if(file != null)
+        if (file != null)
         {
             var ms = new MemoryStream();
             await file.Data.CopyToAsync(ms);
@@ -234,7 +238,7 @@ else
 
     string convertImageToDisplay(byte[] image)
     {
-        if(image != null)
+        if (image != null)
         {
             var base64 = Convert.ToBase64String(image);
             var finalStr = string.Format("data:image/jpg;base64,{0}", base64);
@@ -249,7 +253,7 @@ else
 
     void CategorySelectionChanged(ChangeEventArgs e)
     {
-        if(int.TryParse(e.Value.ToString(), out int categoryId))
+        if (int.TryParse(e.Value.ToString(), out int categoryId))
         {
             objProduct.CategoryId = categoryId;
         }
