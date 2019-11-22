@@ -64,7 +64,7 @@ else
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title text-info">@(objProduct.ProductId != 0 ? "Update" : "Create")Category</h3>
+                    <h3 class="modal-title text-info">@(objProduct.ProductId != 0 ? "Update" : "Create") Product</h3>
                     <button type="button" class="close" @onclick="ClosePopup" aria-label="Close">
                         <span aria-hidden="true">X</span>
                     </button>
@@ -72,7 +72,6 @@ else
                 <EditForm Model="objProduct" OnValidSubmit="@ValidSubmit">
                     <div class="modal-body">
                         <DataAnnotationsValidator />
-                        <ValidationSummary />
                         <div class="row">
                             <div class="col-9">
                                 <div class="row py-2">
@@ -80,7 +79,12 @@ else
                                         Category Name
                                     </div>
                                     <div class="col-8">
-
+                                        <select @onchange="CategorySelectionChanged" class="form-control">
+                                            @foreach(var category in categories)
+                                            {
+                                                <option value="@category.CategoryId" selected="@(category.CategoryId == objProduct.CategoryId ? true : false)">@category.CategoryName</option>
+                                            }
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row py-2">
@@ -89,6 +93,7 @@ else
                                     </div>
                                     <div class="col-8">
                                         <input class="form-control" type="text" @bind="objProduct.ProductName" />
+                                        <ValidationMessage For="@(() => objProduct.ProductName)"/>
                                     </div>
                                 </div>
                                 <div class="row py-2">
@@ -97,6 +102,7 @@ else
                                     </div>
                                     <div class="col-8">
                                         <input class="form-control" type="text" @bind="objProduct.Price" />
+                                        <ValidationMessage For="@(() => objProduct.Price)" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
@@ -104,7 +110,8 @@ else
                                         Shade Color
                                     </div>
                                     <div class="col-8">
-                                        <input class="form-control" type="text" @bind="objProduct.ShadeColor" />
+                                        <InputText class="form-control" @bind-Value="objProduct.ShadeColor" />
+                                        <ValidationMessage For="@(() => objProduct.ShadeColor)" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
@@ -119,13 +126,16 @@ else
                                     <div class="offset-4 col">
                                         <button class="btn btn-primary form-control" type="submit">Submit</button>
                                     </div>
-                                    @if (objProduct.CategoryId > 0)
+                                    @if (objProduct.ProductId > 0)
                                     {
                                         <div class="col">
                                             <button class="btn btn-danger form-control" @onclick="DeleteProduct" type="submit">Delete</button>
                                         </div>
                                     }
                                 </div>
+                            </div>
+                            <div class="col-3">
+                                <img src="@convertImageToDisplay(objProduct.Image)" width="100%" />
                             </div>
                         </div>
                     </div>
@@ -235,6 +245,14 @@ else
             return "";
         }
 
+    }
+
+    void CategorySelectionChanged(ChangeEventArgs e)
+    {
+        if(int.TryParse(e.Value.ToString(), out int categoryId))
+        {
+            objProduct.CategoryId = categoryId;
+        }
     }
 
 }

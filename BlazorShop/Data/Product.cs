@@ -13,13 +13,17 @@ namespace BlazorShop.Data
         public int ProductId { get; set; }
 
         [Required]
+        [Display(Name ="Product Name")]
         public string ProductName { get; set; }
 
+        [Required]
         [Range(0,400)]
         public double Price { get; set; }
 
         public byte[] Image { get; set; }
 
+        [Required]
+        [Display(Name = "Shade Color")]
         public string ShadeColor { get; set; }
 
         public int CategoryId { get; set; }
